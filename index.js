@@ -1,5 +1,7 @@
 const express = require ('express');
+const jwt = require('jsonwebtoken')
 const app = express();
+const JWT_SECRET = "yashrajsinghbeingcool"
 app.use(express.json());
 
 const users  = [];
@@ -41,8 +43,10 @@ app.post('/signin',(req,res)=>{
         }
     }
     if(foundUser){
-        let token = generateToken();
-        foundUser.token = token;
+        let token = jwt.sign({
+            username: username
+        }, JWT_SECRET)//convert their username over a json
+        //foundUser.token = token;
         res.json({
             token : token
         })
@@ -55,24 +59,27 @@ app.post('/signin',(req,res)=>{
     console.log(users);
 })
 app.get('/me', (req,res)=>{
-    const token = req.body.token;
+    const token = req.headers.token; //jwt
+    const decodedInfo = jwt.verify(token, JWT_SECRET);
+    const username = decodedInfo.username;
     let userVal = null;
     for (let i = 0 ; i<users.length; i++){
-        if(users[i].token == token){
+        if(users[i].username == username){
             userVal = users[i];
         }
     }
     if(userVal){
         
         res.json({
-            userDetails : userVal
+            username: userVal.username,
+            password: userVal.password
         })
     }
     else{
         res.status(403).send({
-            message : "This token does not match with any acctive token"
+            message : "This token does not match with any active token"
         })
     }
 
 })
-app.listen(3002);
+app.listen(3002, console.log("The port is running on localhost/3002"));
