@@ -28,6 +28,7 @@ app.post('/signup',(req,res)=>{
     res.json({
         message: "You are signed up",
     })
+    console.log(users);
 })
 app.post('/signin',(req,res)=>{
     const username = req.body.username;
@@ -35,7 +36,7 @@ app.post('/signin',(req,res)=>{
 
     let foundUser = null;
     for (let i = 0 ; i<users.length; i++){
-        if(users[i].username = username && users[i].password==password){
+        if(users[i].username == username && users[i].password==password){
             foundUser = users[i];
         }
     }
@@ -51,6 +52,27 @@ app.post('/signin',(req,res)=>{
             message : "User not found in the database"
         })
     }
+    console.log(users);
 })
+app.get('/me', (req,res)=>{
+    const token = req.body.token;
+    let userVal = null;
+    for (let i = 0 ; i<users.length; i++){
+        if(users[i].token == token){
+            userVal = users[i];
+        }
+    }
+    if(userVal){
+        
+        res.json({
+            userDetails : userVal
+        })
+    }
+    else{
+        res.status(403).send({
+            message : "This token does not match with any acctive token"
+        })
+    }
 
+})
 app.listen(3002);
