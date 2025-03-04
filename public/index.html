@@ -6,6 +6,29 @@
     <title>Document</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.7/axios.min.js"></script>
     <script>
+        window.onload = function(){
+            let isSignedup = localStorage.getItem("isSignedup"); 
+            if(isSignedup !== "true"){
+                document.getElementById("signin").style.display="none"
+                document.getElementById("userID").style.display="none"
+                document.getElementById("logout").style.display="none"
+            }
+            else{
+            document.getElementById("signup").style.display="none"
+            }
+            let isSignedin = localStorage.getItem("isSignedin"); 
+            
+            if(isSignedin !== "true"){
+                
+                document.getElementById("userID").style.display="none"
+                document.getElementById("logout").style.display="none"
+            }
+            else{
+            getUserInfo()
+            document.getElementById("signin").style.display="none"
+            }
+        } 
+        
         async function signup(){
         const username = document.getElementById("signup-username").value;
         const password = document.getElementById("signup-password").value;
@@ -14,6 +37,8 @@
         password : password
         })
         alert("You are signed up!")
+        localStorage.setItem("isSignedup", "true");
+        location.reload();
         }
 
         async function signin(){
@@ -26,7 +51,8 @@
                 })
                 localStorage.setItem("token", response.data.token);
                 alert("You are signed in!")
-                getUserInfo();
+                localStorage.setItem("isSignedin", "true");
+                location.reload();
             }
             catch(error){
                 alert("Signin failed! Check your credentials.");
@@ -39,9 +65,12 @@
                     token : localStorage.getItem("token")
                 }
             })
-            document.getElementById("userDetails").innerHTML = "Username is " + response.data.username + " and the password is " + response.data.password
+            document.getElementById("userDetails").innerHTML = "Welcome Back " + response.data.username + " and you set your password as " + response.data.password
         }
-        
+        function logout(){
+            localStorage.clear(); 
+            location.reload();
+        }
     </script>
 </head>
 <body>
@@ -61,7 +90,7 @@
         <h2 id="userDetails">User Information</h2>
     </div>
     <div>
-        <button onclick="logout()">Logout</button>
+        <button id = "logout" onclick="logout()">Logout</button>
     </div>
     <!-- <script src="script.js"></script> -->
 </body>
